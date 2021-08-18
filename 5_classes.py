@@ -8,17 +8,16 @@ class NewsFeed:
         self.text = text
 
     def write_to_file(self):
-        f = open("volha_newsfeed.txt", "a")
-        f.write(f"\n\n{self.type_of_news}" + ('-' * (30 - len(self.type_of_news))) + '\n')
-        f.write(self.text)
-        f.write(f"\n{self.publish_date}\n")
-        f.write('-' * 30)
-        f.close()
+        with open("volha_newsfeed.txt", "a") as f:
+            f.write(f"\n\n{self.type_of_news}" + ('-' * (30 - len(self.type_of_news))) + '\n')
+            f.write(self.text)
+            f.write(f"\n{self.publish_date}\n")
+            f.write('-' * 30 + '\n')
 
 
 class Ads(NewsFeed):
     def __init__(self, text, days_to_last):
-        NewsFeed.__init__(self, text=text)
+        super().__init__(text)
         self.days_to_last = int(days_to_last)
         self.type_of_news = "Ads"
 
@@ -30,24 +29,22 @@ class Ads(NewsFeed):
         return (self.calculate_expiration_date() - date.today()).days
 
     def write_to_file(self):
-        f = open("volha_newsfeed.txt", "a")
-        f.write(f"\n{self.type_of_news}------------------------\n")
-        f.write(self.text)
-        f.write(f"\nActual till: {self.calculate_expiration_date()}. {self.calculate_days_left()} days left.\n")
-        f.close()
+        with open("volha_newsfeed.txt", "a") as f:
+            f.write(f"\n{self.type_of_news}------------------------\n")
+            f.write(self.text)
+            f.write(f"\nActual till: {self.calculate_expiration_date()}. {self.calculate_days_left()} days left.\n")
 
 
 class News(NewsFeed):
-    def __init__(self, text, city):
-        NewsFeed.__init__(self, text=text)
+    def __init__(self, text, city: object):
+        super().__init__(text)
         self.city = city
 
     def write_to_file(self):
-        f = open("volha_newsfeed.txt", "a")
-        f.write(f"\n{self.type_of_news}------------------------\n")
-        f.write(self.text)
-        f.write(f"\n{self.city} {self.publish_date}\n")
-        f.close()
+        with open("volha_newsfeed.txt", "a") as f:
+            f.write(f"\n{self.type_of_news}------------------------\n")
+            f.write(self.text)
+            f.write(f"\n{self.city} {self.publish_date}\n")
 
 
 while input("Do you want to add something?\nPrint Y for yes, N for no ").upper() == "Y":
@@ -62,6 +59,4 @@ while input("Do you want to add something?\nPrint Y for yes, N for no ").upper()
     elif user_choice == "3":
         news_feed_item = NewsFeed(user_text, "Weather")
     news_feed_item.write_to_file()
-
-
 
