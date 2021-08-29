@@ -84,6 +84,7 @@ class AutoFeed:
             elif lines_capitalized[0] == "3":
                 user_text = lines_capitalized[1]
                 news_feed_item = Feed(user_text, "Weather")
+                lines_capitalized = lines_capitalized[2:]
             news_feed_item.write_to_file()
 
 
