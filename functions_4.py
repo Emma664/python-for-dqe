@@ -65,7 +65,7 @@ def create_common_dictionary(arbitrary_list: list) -> dict:
     return union_dict
 
 
-print(create_common_dictionary(generate_dictionaries()))
+# print(create_common_dictionary(generate_dictionaries()))
 
 
 def normalize_case(text: str) -> str:
@@ -83,7 +83,8 @@ def normalize_case(text: str) -> str:
            of the first word in each sentence.
        """
 
-    text_capitalized = '. '.join([item.strip().capitalize() for item in text.split('.')])
+    # text_capitalized = '. '.join([item.strip().capitalize() for item in text.split('.')])
+    text_capitalized = text.capitalize()
     return text_capitalized
 
 
@@ -183,5 +184,5 @@ A deep copy is the “real copy.” It is an independent copy of the original ob
 Thanks for reading. I hope you learned something new today.
 Happy coding!'''
 
-do_strings_homework(homework)
-do_strings_homework(test)
+#do_strings_homework(homework)
+#do_strings_homework(test)
