@@ -1,3 +1,4 @@
+import json
 import os
 from datetime import datetime, timedelta, date
 from functions_4 import normalize_case
@@ -88,8 +89,29 @@ class AutoFeed:
             news_feed_item.write_to_file()
 
 
+class JsonAutoFeed:
+    def __init__(self, number_of_records=1,
+                 path=r"C:\Users\Volha_Bykhautsova\PycharmProjects\python-for-dqe\feed.json"):
+        self.number_of_records = number_of_records
+        self.path = path
+
+    def read_file(self):
+        with open(self.path) as json_file:
+            fields = json.load(json_file)
+
+        if fields["type"] == "Ads":
+            return Ads(fields["text"], fields["days_to_last"])
+        if fields["type"] == "News":
+            return News(fields["text"], fields["city"])
+        return Feed(fields["text"])
+
+    def write_to_feed(self):
+        self.read_file().write_to_file()
+
+
 while input("Do you want to add something?\nPrint Y for yes, N for no ").upper() == "Y":
-    if input("Add feed manually - 1, add feed from file - 2. \nPlease, enter your choice: ") == "1":
+    user_input = input("Add feed manually - 1, add feed from txt - 2, add feed from json - 3. \nPlease, enter your choice: ")
+    if  user_input == "1":
         user_choice = input("News - 1, Ads - 2, Weather - 3.\nPlease, enter your choice: ")
         user_text = input("Please, enter your text: ")
         if user_choice == "1":
@@ -101,6 +123,8 @@ while input("Do you want to add something?\nPrint Y for yes, N for no ").upper()
         elif user_choice == "3":
             news_feed_item = Feed(user_text, "Weather")
         news_feed_item.write_to_file()
+    elif user_input == "3":
+        JsonAutoFeed().write_to_feed()
     else:
         number_of_records = input("Please, enter number of records. Hit enter to skip. ")
         path = input("Please, provide path to your file. Hit enter to skip. ")
