@@ -2,7 +2,7 @@ import json
 import os
 from datetime import datetime, timedelta, date
 from functions_4 import normalize_case
-
+import xml.etree.ElementTree as ET
 
 class Feed:
     def __init__(self, text, type_of_news='News'):
@@ -109,8 +109,30 @@ class JsonAutoFeed:
         self.read_file().write_to_file()
 
 
+class XmlAutoFeed:
+    def __init__(self, number_of_records=1,
+    path=r"C:\Users\Volha_Bykhautsova\PycharmProjects\python-for-dqe\feed.xml"):
+        self.number_of_records = number_of_records
+        self.path = path
+
+    def read_file(self):
+        tree = ET.parse(self.path)
+        root = tree.getroot()
+        for child in root:
+            if child.tag == "Ads":
+                return Ads(child.text, child.attrib["days_to_last"])
+            if child.tag == "News":
+                return News(child.text, child.attrib["city"])
+        return Feed(child.text)
+
+
+    def write_to_feed(self):
+        self.read_file().write_to_file()
+
+
+
 while input("Do you want to add something?\nPrint Y for yes, N for no ").upper() == "Y":
-    user_input = input("Add feed manually - 1, add feed from txt - 2, add feed from json - 3. \nPlease, enter your choice: ")
+    user_input = input("Add feed manually - 1, add feed from txt - 2, add feed from json - 3, add feed from xml - 4. \nPlease, enter your choice: ")
     if  user_input == "1":
         user_choice = input("News - 1, Ads - 2, Weather - 3.\nPlease, enter your choice: ")
         user_text = input("Please, enter your text: ")
@@ -125,6 +147,8 @@ while input("Do you want to add something?\nPrint Y for yes, N for no ").upper()
         news_feed_item.write_to_file()
     elif user_input == "3":
         JsonAutoFeed().write_to_feed()
+    elif user_input == "4":
+        XmlAutoFeed().write_to_feed()
     else:
         number_of_records = input("Please, enter number of records. Hit enter to skip. ")
         path = input("Please, provide path to your file. Hit enter to skip. ")
