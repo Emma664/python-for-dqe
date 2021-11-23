@@ -129,10 +129,64 @@ class XmlAutoFeed:
     def write_to_feed(self):
         self.read_file().write_to_file()
 
+class SqlAutoFeed:
+    def __init__(self, number_of_records=1, path=r"C:\Users\Volha_Bykhautsova\PycharmProjects\python-for-dqe\sql.db"):
+        conn_str = (
+            r'DRIVER=SQLite3 ODBC Driver;'
+            r'DATABASE='+path
+        )
+        self.conn = pyodbc.connect(conn_str)
+        self.number_of_records = number_of_records
+        self._create_tables()
 
+
+    def read_file(self):
+        for row in cursor.execute("SELECT publish_date, type_of_news, text_content FROM Feed"):
+            return Feed(row['text_content'])
+
+        for row in cursor.execute("SELECT publish_date, type_of_news, text_content, days_to_last FROM Ads"):
+            return Ads(row['text_content'], row['days_to_last'])
+
+        for row in cursor.execute("SELECT publish_date, type_of_news, text_content, city FROM News"):
+            return News(row['text_content'], row['city'])
+
+
+    def write_to_feed(self):
+        # TODO: It should write to SQL
+        self.read_file().write_to_file()
+
+    def _create_tables(self):
+        self.conn.execute("""
+            CREATE TABLE IF NOT EXISTS Feed (
+                publish_date VARCHAR(20) NOT NULL,
+                type_of_news VARCHAR(10) NOT NULL,
+                text_content TEXT NOT NULL
+            );
+        """)
+        self.conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS feed_index ON Feed(publish_date);")
+
+        self.conn.execute("""
+            CREATE IF NOT EXISTS TABLE Ads (
+                publish_date VARCHAR(20) NOT NULL,
+                type_of_news VARCHAR(10) NOT NULL,
+                text_content TEXT NOT NULL,
+                days_to_last INTEGER NOT NULL
+            );
+        """)
+        self.conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS ads_index ON Ads(publish_date);")
+
+        self.conn.execute("""
+            CREATE TABLE IF NOT EXISTS News (
+                publish_date VARCHAR(20) NOT NULL,
+                type_of_news VARCHAR(10) NOT NULL,
+                text_content TEXT NOT NULL,
+                city VARCHAR(20) NOT NULL
+            );
+        """)
+        self.conn.execute("CREATE UNIQUE INDEX IF NOT EXISTS news_index ON News(publish_date);")
 
 while input("Do you want to add something?\nPrint Y for yes, N for no ").upper() == "Y":
-    user_input = input("Add feed manually - 1, add feed from txt - 2, add feed from json - 3, add feed from xml - 4. \nPlease, enter your choice: ")
+    user_input = input("Add feed manually - 1, add feed from txt - 2, add feed from json - 3, add feed from xml - 4, add feed from sql - 5. \nPlease, enter your choice: ")
     if  user_input == "1":
         user_choice = input("News - 1, Ads - 2, Weather - 3.\nPlease, enter your choice: ")
         user_text = input("Please, enter your text: ")
@@ -149,6 +203,8 @@ while input("Do you want to add something?\nPrint Y for yes, N for no ").upper()
         JsonAutoFeed().write_to_feed()
     elif user_input == "4":
         XmlAutoFeed().write_to_feed()
+    elif user_input == "5":
+        SqlAutoFeed().write_to_feed()
     else:
         number_of_records = input("Please, enter number of records. Hit enter to skip. ")
         path = input("Please, provide path to your file. Hit enter to skip. ")
